@@ -1,33 +1,17 @@
 # cljs-proj
 
-A [re-frame](https://github.com/Day8/re-frame) application designed to ... well, that part is up to you.
+A Node.JS / re-frame skeleton for ClojureScript
 
 ## Development Mode
 
-### Compile css:
-
-Compile css file once.
-
 ```
-lein less once
+lein dev
+node target/server_dev/index.js
 ```
 
-Automatically recompile css file on change.
+Figwheel will automatically push cljs changes to the browser and node server.
 
-```
-lein less auto
-```
-
-### Run application:
-
-```
-lein clean
-lein figwheel dev
-```
-
-Figwheel will automatically push cljs changes to the browser.
-
-Wait a bit, then browse to [http://localhost:3449](http://localhost:3449).
+Wait a bit, then browse to [http://localhost:3779](http://localhost:3779).
 
 ### Run tests:
 
@@ -36,11 +20,8 @@ lein clean
 lein doo phantom test once
 ```
 
-The above command assumes that you have [phantomjs](https://www.npmjs.com/package/phantomjs) installed. However, please note that [doo](https://github.com/bensu/doo) can be configured to run cljs.test in many other JS environments (chrome, ie, safari, opera, slimer, node, rhino, or nashorn). 
+The above command assumes that you have [phantomjs](https://www.npmjs.com/package/phantomjs) installed. However, please note that [doo](https://github.com/bensu/doo) can be configured to run cljs.test in many other JS environments (chrome, ie, safari, opera, slimer, node, rhino, or nashorn).
 
 ## Production Build
 
-```
-lein clean
-lein cljsbuild once min
-```
+@TODO
