@@ -1,6 +1,7 @@
 (ns server.core
   (:require [cljs.nodejs :as nodejs]
-            [figwheel.client :as fw]))
+            [figwheel.client :as fw]
+            [server.util :as util]))
 
 (nodejs/enable-util-print!)
 
@@ -26,4 +27,5 @@
 
 (set! *main-cli-fn* -main)
 
-(fw/start {})
+(when-not (= (util/env "NODE_ENV") "production")
+  (fw/start {}))
