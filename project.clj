@@ -19,7 +19,9 @@
                         [ws "0.8.1"]
                         [express "4.13.3"]
                         [body-parser "1.15.0"]
-                        [serve-static "1.10.2"]]}
+                        [serve-static "1.10.2"]
+                        [github "0.2.4"]
+                        [bitbucket-api "0.1.0"]]}
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"
                                     "test/js"]
