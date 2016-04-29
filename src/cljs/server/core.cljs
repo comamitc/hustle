@@ -11,19 +11,20 @@
 (defonce body-parser (nodejs/require "body-parser"))
 
 (def app (express))
+(def port 3779)
 
 ;; attach body-parser
 (.use app (.urlencoded body-parser #js {:extended false}))
 (.use app (.json body-parser))
 
-(. app (get "/api" (fn [req res] (.send res "Hello, World!"))))
+(. app (get "/api/graph" (fn [req res] (.send res "Hello, World!"))))
 
 (. app (use (serve-static "resources/public" #js {:index "index.html"})))
 
 (def -main
   (fn []
       (doto (.createServer http #(app %1 %2))
-            (.listen 3779))))
+            (.listen port))))
 
 (set! *main-cli-fn* -main)
 
