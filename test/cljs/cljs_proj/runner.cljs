@@ -1,5 +1,5 @@
-(ns cljs-proj.runner
+(ns hustle.runner
     (:require [doo.runner :refer-macros [doo-tests]]
-              [cljs-proj.core-test]))
+              [hustle.core-test]))
 
-(doo-tests 'cljs-proj.core-test)
+(doo-tests 'hustle.core-test)

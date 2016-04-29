@@ -1,6 +1,6 @@
-(ns cljs-proj.core-test
+(ns hustle.core-test
   (:require [cljs.test :refer-macros [deftest testing is]]
-            [cljs-proj.core :as core]))
+            [hustle.core :as core]))
 
 (deftest fake-test
   (testing "fake description"

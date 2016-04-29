@@ -1,6 +1,6 @@
-# cljs-proj
+# hustle
 
-A Node.JS / re-frame skeleton for ClojureScript
+A github and bitbucket activity graph mashup
 
 ## Development Mode
 
