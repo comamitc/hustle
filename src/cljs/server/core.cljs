@@ -17,7 +17,9 @@
 (.use app (.urlencoded body-parser #js {:extended false}))
 (.use app (.json body-parser))
 
-(. app (get "/api/graph" (fn [req res] (.send res "Hello, World!"))))
+;; mount routes
+(. app (get "/api/github" (fn [req res] (.send res "Hello, World!"))))
+(. app (get "/api/bitbucket" (fn [req res] (.send res "Hello, World!"))))
 
 (. app (use (serve-static "resources/public" #js {:index "index.html"})))
 
