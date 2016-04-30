@@ -1,0 +1,10 @@
+{
+  "github": {
+    "user": "foo",
+    "password": "bar"
+  },
+  "bitbucket": {
+    "user": "foo",
+    "password": "baz"
+  }
+}
