@@ -1,7 +1,8 @@
 (ns server.core
   (:require [cljs.nodejs :as nodejs]
             [figwheel.client :as fw]
-            [server.util :as util]))
+            [server.util :as util]
+            [server.service.github :as gh]))
 
 (nodejs/enable-util-print!)
 
@@ -17,8 +18,12 @@
 (.use app (.urlencoded body-parser #js {:extended false}))
 (.use app (.json body-parser))
 
-;; mount routes
-(. app (get "/api/github" (fn [req res] (.send res "Hello, World!"))))
+;; github route
+(. app (get "/api/github"
+            (fn [req res]
+              (.send res (gh/get-activity)))))
+
+;; bitbucket route
 (. app (get "/api/bitbucket" (fn [req res] (.send res "Hello, World!"))))
 
 (. app (use (serve-static "resources/public" #js {:index "index.html"})))
