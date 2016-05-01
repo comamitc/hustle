@@ -1,6 +1,6 @@
 # hustle
 
-A github and bitbucket activity graph mashup
+A github and bitbucket activity graph mashup.
 
 ## Development Mode
 
