@@ -1,4 +1,5 @@
-(ns common.util)
+(ns common.util
+  (:require [cognitect.transit :as t]))
 
 (defn log
   "Log a Clojure thing."
@@ -9,3 +10,14 @@
   "Log a JavaScript thing."
   [thing]
   (js/console.log thing))
+
+;; @TODO: standardize to stringify keywords.
+(defn cljs->js
+  "takes native cljs data structure and converts to json"
+  [x]
+  (let [w (t/writer :json-verbose)]
+    (t/write w x)))
+
+(defn js->cljs [x]
+  (let [r (t/reader :json)]
+    (t/read r x)))
