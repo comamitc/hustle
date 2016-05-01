@@ -58,8 +58,8 @@
                         :source-paths ["src/cljs/server" "src/cljs/common"]
                         :figwheel true
                         :compiler {:main server.core
-                                   :output-to "target/server_dev/index.js"
-                                   :output-dir "target/server_dev"
+                                   :output-to "target/server/index.js"
+                                   :output-dir "target/server"
                                    :target :nodejs
                                    :optimizations :none
                                    :source-map true}}
