@@ -1,9 +1,11 @@
 (defproject hustle "0.1.0-SNAPSHOT"
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [org.clojure/clojurescript "1.7.170"]
+                 [org.clojure/core.async "0.2.374"]
                  [reagent "0.5.1"]
                  [re-frame "0.7.0"]
-                 [secretary "1.2.3"]]
+                 [secretary "1.2.3"]
+                 [com.cognitect/transit-cljs "0.8.237"]]
 
   :min-lein-version "2.5.3"
 
