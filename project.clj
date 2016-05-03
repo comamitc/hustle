@@ -5,12 +5,13 @@
                  [reagent "0.5.1"]
                  [re-frame "0.7.0"]
                  [secretary "1.2.3"]
-                 [com.cognitect/transit-cljs "0.8.237"]]
+                 [com.cognitect/transit-cljs "0.8.237"]
+                 [com.andrewmcveigh/cljs-time "0.4.0"]]
 
   :min-lein-version "2.5.3"
 
   :plugins [[lein-cljsbuild "1.1.3"]
-            [lein-figwheel "0.5.0-6"]
+            [lein-figwheel "0.5.2"]
             [lein-doo "0.1.6"]
             [lein-asset-minifier "0.2.4"]
             [lein-npm "0.6.2"]
@@ -30,7 +31,6 @@
 
   :figwheel {:css-dirs ["resources/public/css"]
              :repl false}
-
 
   :less {:source-paths ["less"]
          :target-path  "resources/public/css/compiled"}
@@ -64,14 +64,14 @@
                                    :output-dir "target/server"
                                    :target :nodejs
                                    :optimizations :none
-                                   :source-map true}}
+                                   :source-map true}}]}
 
                        ;; @TODO: this is likely to change
-                       {:id "test"
-                        :source-paths ["src/cljs" "test/cljs"]
-                        :compiler {:output-to "resources/public/js/compiled/test.js"}
-                        :main cljs-proj.runner
-                        :optimizations :none}]}
+                      ;  {:id "test"
+                      ;   :source-paths ["src/cljs" "test/cljs"]
+                      ;   :compiler {:output-to "resources/public/js/compiled/test.js"}
+                      ;   :main cljs-proj.runner
+                      ;   :optimizations :none}]}
 
   :aliases {"dev" ["pdo" ["less" "auto"]
                          ["figwheel" "client" "server"]]})

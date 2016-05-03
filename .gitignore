@@ -6,3 +6,4 @@
 /resources/config/application.json
 out
 /node_modules
+.lein-repl-history
