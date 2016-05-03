@@ -1,6 +1,7 @@
 (ns server.core
   (:require [cljs.nodejs :as nodejs]
             [figwheel.client :as fw]
+            [cljs.core.async :refer [take!]]
             [server.util :as util]
             [server.service.github :as gh]))
 
@@ -21,7 +22,10 @@
 ;; github route
 (. app (get "/api/github"
             (fn [req res]
-              (.send res (gh/get-activity)))))
+              (take! (gh/get-activity)
+                     (fn [result]
+                       (print "TAKE!")
+                       (.send res (str result)))))))
 
 ;; bitbucket route
 (. app (get "/api/bitbucket" (fn [req res] (.send res "Hello, World!"))))
