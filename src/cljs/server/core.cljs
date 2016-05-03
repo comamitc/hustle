@@ -39,5 +39,4 @@
 
 (set! *main-cli-fn* -main)
 
-(when-not (= (util/env "NODE_ENV") "production")
-  (fw/start {}))
+(fw/start {})
