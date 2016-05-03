@@ -26,9 +26,7 @@
   [ch]
   (fn [err page]
       (when page
-        (let [p (js->clj page)]
-          (log (str (count p) " " (.hasNextPage client page)))
-          (onto-chan ch p false)))
+        (onto-chan ch (js->clj page) false))
 
       (if (.hasNextPage client page)
         ; then
@@ -53,10 +51,10 @@
 (defn- reduce-commits [acc commit]
   (let [formatter (ftime/formatter "yyyyMMdd")
         date      (-> commit
-                    (get "commit")
-                    (get "committer")
-                    (get "date")
-                    (ctime/from-string))]
+                      (get "commit")
+                      (get "committer")
+                      (get "date")
+                      (ctime/from-string))]
     (merge-with + acc {(ftime/unparse formatter date) 1})))
 
 ; @TODO: account for error in all requests
