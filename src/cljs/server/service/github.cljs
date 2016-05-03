@@ -4,6 +4,7 @@
             [cljs.core.async :as async :refer [<! put! chan onto-chan close!]]
             [cljs-time.core :as time]
             [cljs-time.coerce :as ctime]
+            [cljs-time.format :as ftime]
             [common.util :refer [js-log log js->cljs]]
             [server.config :refer [config]]))
 
@@ -50,13 +51,13 @@
     (conj acc out-ch)))
 
 (defn- reduce-commits [acc commit]
-  (let [date (-> commit
-                 (get "commit")
-                 (get "committer")
-                 (get "date")
-                 (ctime/to-local-date)
-                 (ctime/to-string))]
-    (merge-with + acc {date 1})))
+  (let [formatter (ftime/formatter "yyyyMMdd")
+        date      (-> commit
+                    (get "commit")
+                    (get "committer")
+                    (get "date")
+                    (ctime/from-string))]
+    (merge-with + acc {(ftime/unparse formatter date) 1})))
 
 ; @TODO: account for error in all requests
 ; @TODO: native clj transformations to transit
@@ -65,8 +66,10 @@
   ; paginate through all user repos
   (.getAll RepoApi (clj->js {"per_page" 100}) (paginate repo-ch))
   ; reduce over commits and add them together
-  ;(reduce #(inc %1) 0 commit-ch))
   (go
-    (let [chs           (<! (async/reduce reduce-repos [] repo-ch))
-          repo-commits  (async/merge chs)]
-      (<! (async/reduce reduce-commits {} repo-commits)))))
+    (->> repo-ch
+         (async/reduce reduce-repos [])
+         (<!)
+         (async/merge)
+         (async/reduce reduce-commits {})
+         (<!))))
