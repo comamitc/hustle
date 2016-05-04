@@ -19,5 +19,6 @@
     (t/write w x)))
 
 (defn js->cljs [x]
-  (let [r (t/reader :json)]
-    (t/read r x)))
+  (let [r   (t/reader :json)
+        str (if-not (string? x) (.stringify js/JSON x) x)]
+    (t/read r str)))
