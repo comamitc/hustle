@@ -38,7 +38,7 @@
 
 (defn- reduce-repos [acc repo]
   (let [out-ch (chan)
-        user   (-> repo (get "owner" ) (get "login"))
+        user   (get-in repo ["owner" "login"])
         repo   (get repo "name")
         author (-> config (.-github) (.-username))
         since  (time/ago (time/years 1))]

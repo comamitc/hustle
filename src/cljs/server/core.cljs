@@ -24,7 +24,6 @@
             (fn [req res]
               (take! (gh/get-activity)
                      (fn [result]
-                       (print "TAKE!")
                        (.send res (str result)))))))
 
 ;; bitbucket route
