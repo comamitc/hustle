@@ -23,18 +23,28 @@
 
 (defonce RepoApi (.-repos client))
 
+(defn- next-page [curr-page]
+  (let [out (chan)]
+    (.getNextPage client curr-page
+                         (fn [err next]
+                           (put! out {:err err :page next} #(close! out))))
+    out))
+
 (defn- paginate
   [ch]
   (fn [err page]
-      (let [p (js->cljs (or page nil))]
-        (when (< 0 (count p))
-          (onto-chan ch p false)))
-
-      (if (.hasNextPage client page)
-        ; then
-        (.getNextPage client page (paginate ch))
-        ; else
-        (close! ch))))
+    (let [p-ch (chan)]
+      (put! p-ch {:err err :page page})
+      (go-loop [result p-ch]
+        (let [page  (:page (<! result))
+              p (js->cljs (or page nil))]
+          (when (< 0 (count p))
+            (onto-chan ch p false))
+          (if (.hasNextPage client page)
+            ; then
+            (recur (next-page page))
+            ; else
+            (close! ch)))))))
 
 (defn- reduce-repos [acc repo]
   (let [out-ch (chan)
@@ -61,11 +71,10 @@
 ; @TODO: native clj transformations to transit
 (defn get-activity
   []
-  (.getAll RepoApi #js {"per_page" 100}
-                   (paginate repo-ch))
   (go
     ; paginate through all user repos
-
+    (.getAll RepoApi #js {"per_page" 100}
+                     (paginate repo-ch))
     ; reduce over commits and add them together
     (->> repo-ch
          (async/reduce reduce-repos [])
