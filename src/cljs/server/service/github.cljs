@@ -26,8 +26,9 @@
 (defn- paginate
   [ch]
   (fn [err page]
-      (when page
-        (onto-chan ch (js->clj page) false))
+      (let [p (js->cljs (or page nil))]
+        (when (< 0 (count p))
+          (onto-chan ch p false)))
 
       (if (.hasNextPage client page)
         ; then
@@ -42,30 +43,30 @@
         author (-> config (.-github) (.-username))
         since  (time/ago (time/years 1))]
     (. RepoApi (getCommits (clj->js {:user      user
-                                     :repo      repo
-                                     :author    author
-                                     "per_page" 100
-                                     :since     (ctime/to-string since)})
+                                      :repo      repo
+                                      :author    author
+                                      "per_page" 100
+                                      :since     (ctime/to-string since)})
                            (paginate out-ch)))
     (conj acc out-ch)))
 
 (defn- reduce-commits [acc commit]
-  (let [formatter (ftime/formatter "yyyyMMdd")
-        date      (-> commit
-                      (get "commit")
-                      (get "committer")
-                      (get "date")
-                      (ctime/from-string))]
-    (merge-with + acc {(ftime/unparse formatter date) 1})))
+  (let [date (-> commit
+                (get-in ["commit" "committer" "date"])
+                (js/Date.)
+                (.toLocaleDateString))]
+    (merge-with + acc {date 1})))
 
 ; @TODO: account for error in all requests
 ; @TODO: native clj transformations to transit
 (defn get-activity
   []
-  ; paginate through all user repos
-  (.getAll RepoApi (clj->js {"per_page" 100}) (paginate repo-ch))
-  ; reduce over commits and add them together
+  (.getAll RepoApi #js {"per_page" 100}
+                   (paginate repo-ch))
   (go
+    ; paginate through all user repos
+
+    ; reduce over commits and add them together
     (->> repo-ch
          (async/reduce reduce-repos [])
          (<!)
