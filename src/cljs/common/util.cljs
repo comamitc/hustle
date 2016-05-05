@@ -16,7 +16,7 @@
   "takes native cljs data structure and converts to json"
   [x]
   (let [w (t/writer :json-verbose)]
-    (t/write w x)))
+    (.parse js/JSON (t/write w x))))
 
 (defn js->cljs [x]
   (let [r   (t/reader :json)
