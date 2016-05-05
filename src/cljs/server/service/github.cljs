@@ -6,22 +6,23 @@
             [cljs-time.core :as time]
             [cljs-time.coerce :as ctime]
             [cljs-time.format :as ftime]
-            [common.util :refer [js-log log js->cljs]]
+            [common.util :refer [js-log log js->cljs cljs->js]]
             [server.config :refer [config]]))
-
-; channels
-(def repo-ch (chan))
 
 ; GitHub API
 (def Github (nodejs/require "github"))
 (def client (Github. #js {:version "3.0.0"
-                              :host    "api.github.com"
-                              :debug   false})) ; @TODO: toggle based on NODE_ENV
+                          :host    "api.github.com"
+                          :debug   false})) ; @TODO: toggle based on NODE_ENV
 
 ; authenticate client to github using basic credentials
 (.authenticate client (.-github config))
 
+; Global RepoApi for use
 (def RepoApi (.-repos client))
+
+; time span to capture
+(def start (ctime/to-string (time/ago (time/years 1))))
 
 (defn- paginate [ch]
   (fn [err page]
@@ -54,13 +55,12 @@
   (let [out-ch (chan)
         user   (get-in repo ["owner" "login"])
         repo   (get repo "name")
-        author (-> config (.-github) (.-username))
-        since  (time/ago (time/years 1))]
-    (. RepoApi (getCommits (clj->js {:user      user
-                                     :repo      repo
-                                     :author    author
-                                     "per_page" 100
-                                     :since     (ctime/to-string since)})
+        author (-> config (.-github) (.-username))]
+    (. RepoApi (getCommits (cljs->js {"user"     user
+                                      "repo"     repo
+                                      "author"   author
+                                      "per_page" 100
+                                      "since"    start})
                            (paginate out-ch)))
     (conj acc out-ch)))
 
@@ -72,17 +72,17 @@
     (merge-with + acc {date 1})))
 
 ; @TODO: account for error in all requests
-; @TODO: native clj transformations to transit
 (defn get-activity
   []
-  (go
-    ; paginate through all user repos
-    (.getAll RepoApi #js {"per_page" 100}
-                     (paginate repo-ch))
-    ; reduce over commits and add them together
-    (->> repo-ch
-         (async/reduce reduce-repos [])
-         (<!)
-         (async/merge)
-         (async/reduce reduce-commits {})
-         (<!))))
+  (let [repo-ch (chan)]
+    (go
+      ; paginate through all user repos
+      (.getAll RepoApi (cljs->js {"per_page" 100})
+                       (paginate repo-ch))
+      ; reduce over commits and add them together
+      (->> repo-ch
+           (async/reduce reduce-repos [])
+           (<!)
+           (async/merge)
+           (async/reduce reduce-commits {})
+           (<!)))))
