@@ -57,10 +57,10 @@
         author (-> config (.-github) (.-username))
         since  (time/ago (time/years 1))]
     (. RepoApi (getCommits (clj->js {:user      user
-                                      :repo      repo
-                                      :author    author
-                                      "per_page" 100
-                                      :since     (ctime/to-string since)})
+                                     :repo      repo
+                                     :author    author
+                                     "per_page" 100
+                                     :since     (ctime/to-string since)})
                            (paginate out-ch)))
     (conj acc out-ch)))
 
