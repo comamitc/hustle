@@ -10,41 +10,45 @@
             [server.config :refer [config]]))
 
 ; channels
-(defonce repo-ch (chan))
+(def repo-ch (chan))
 
 ; GitHub API
-(defonce Github (nodejs/require "github"))
-(defonce client (Github. #js {:version "3.0.0"
+(def Github (nodejs/require "github"))
+(def client (Github. #js {:version "3.0.0"
                               :host    "api.github.com"
                               :debug   false})) ; @TODO: toggle based on NODE_ENV
 
 ; authenticate client to github using basic credentials
 (.authenticate client (.-github config))
 
-(defonce RepoApi (.-repos client))
+(def RepoApi (.-repos client))
 
-(defn- next-page [curr-page]
-  (let [out (chan)]
-    (.getNextPage client curr-page
-                         (fn [err next]
-                           (put! out {:err err :page next} #(close! out))))
-    out))
-
-(defn- paginate
-  [ch]
+(defn- paginate [ch]
   (fn [err page]
-    (let [p-ch (chan)]
-      (put! p-ch {:err err :page page})
-      (go-loop [result p-ch]
-        (let [page  (:page (<! result))
-              p (js->cljs (or page nil))]
-          (when (< 0 (count p))
-            (onto-chan ch p false))
-          (if (.hasNextPage client page)
-            ; then
-            (recur (next-page page))
-            ; else
-            (close! ch)))))))
+    (let [cntr (atom 0)]
+      ; go-loop for recursion with channel to async calls
+      (go-loop [result page
+                acc    (js->cljs (or result nil))]
+        (let [next? (.hasNextPage client result)]
+
+          ; increment if next? else copy to channel and close
+          (if next?
+            (swap! cntr inc)
+            (onto-chan ch acc))
+
+          ; when next? async call and return that channel's result thru recur
+          (when next?
+            (let [next-page (<! (let [out (chan)]
+                                  (.getNextPage
+                                    client
+                                    result
+                                    (fn [err res]
+                                        (put! out res #(do
+                                                        (close! out)
+                                                        (swap! cntr dec)))))
+                                  out))]
+              (recur next-page (concat acc
+                                       (js->cljs next-page))))))))))
 
 (defn- reduce-repos [acc repo]
   (let [out-ch (chan)
