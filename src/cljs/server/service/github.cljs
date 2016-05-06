@@ -2,8 +2,8 @@
   (:require-macros [cljs.core.async.macros :refer [go go-loop]])
   (:require [cljs.nodejs :as nodejs]
             [cljs.core.async :as async :refer [<! put! chan onto-chan close!]]
-            [cljs-time.core :as time]
-            [cljs-time.coerce :as ctime]
+            [cljs-time.core :as t]
+            [cljs-time.coerce :as ct]
             [common.util :refer [js->cljs cljs->js]]
             [server.config :refer [config]]))
 
@@ -20,7 +20,7 @@
 (def RepoApi (.-repos client))
 
 ; time span to capture
-(def start (ctime/to-string (time/ago (time/years 1))))
+(def start (ct/to-string (t/ago (t/years 1))))
 
 (defn- paginate [ch]
   (fn [err page]
@@ -65,8 +65,7 @@
 (defn- reduce-commits [acc commit]
   (let [date (-> commit
                 (get-in ["commit" "committer" "date"])
-                (js/Date.)
-                (.toLocaleDateString))]
+                (ct/to-local-date))]
     (merge-with + acc {date 1})))
 
 ; @TODO: account for error in all requests

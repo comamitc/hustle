@@ -83,6 +83,7 @@
                                                 (duration 50)
                                                 (style "opacity" 0.9))
                                             (.. div
+                                                ;; @TODO: we expect date to come across in YYYYMMDD format
                                                 (html (ct/to-local-date (.-date d))))))
                                       (on "mouseout"
                                           (fn [d]
