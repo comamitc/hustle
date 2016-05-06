@@ -4,9 +4,9 @@
                  [org.clojure/core.async "0.2.374"]
                  [reagent "0.5.1"]
                  [re-frame "0.7.0"]
-                 [secretary "1.2.3"]
                  [com.cognitect/transit-cljs "0.8.237"]
-                 [com.andrewmcveigh/cljs-time "0.4.0"]]
+                 [com.andrewmcveigh/cljs-time "0.4.0"]
+                 [cljsjs/d3 "3.5.16-0"]]
 
   :min-lein-version "2.5.3"
 
@@ -41,7 +41,7 @@
 
   :cljsbuild {:builds [{:id "client"
                         :source-paths ["src/cljs/client" "src/cljs/common"]
-                        :figwheel {:on-jsload "client.core/mount-root"}
+                        :figwheel {:on-jsload "client.core/init"}
                         :compiler {:main client.core
                                    :output-to "resources/public/js/compiled/app.js"
                                    :output-dir "resources/public/js/compiled/out"

@@ -2,5 +2,6 @@
     (:require [client.components.activity.core :as activity]
               [client.config :as config]))
 
-(defn ^:export activityGraph [elm-id]
-  (activity/render elm-id))
+; @TODO - figure out difference between dev and prod for exporting
+(defn ^:export init []
+  (activity/render "app"))
