@@ -4,7 +4,8 @@
             [re-frame.core :as re-frame]
             [client.components.activity.handlers]
             [client.components.activity.subs]
-            [cljs-time.core :as ct]
+            [cljs-time.core :as t]
+            [cljs-time.coerce :as ct]
             [cljs-time.periodic :refer [periodic-seq]]
             [common.util :refer [log js-log]]))
 
@@ -13,9 +14,9 @@
 (def height 400)
 
 (defn- compute-date [week day]
-  (let [dow (- 7 (ct/day-of-week (ct/now)))]
-    (-> (ct/ago (ct/weeks (- 52 week)))
-        (ct/minus (ct/days (-  (- 6 day) dow))))))
+  (let [dow (- 7 (t/day-of-week (t/now)))]
+    (-> (t/ago (t/weeks (- 52 week)))
+        (t/minus (t/days (-  (- 6 day) dow))))))
 
 (defn- cal-grid []
   (let [weeks 53
@@ -69,10 +70,10 @@
                                       (attr "height" #(.-edge %))
                                       (attr "fill" "#fff")
                                       (attr "stroke" (fn [d]
-                                                       (when (ct/within?
-                                                               (ct/ago
-                                                                 (ct/years 1))
-                                                               (ct/now)
+                                                       (when (t/within?
+                                                               (t/ago
+                                                                 (t/years 1))
+                                                               (t/now)
                                                                (.-date d))
                                                          "#ddd")))
                                       (on "mouseover"
@@ -82,7 +83,7 @@
                                                 (duration 50)
                                                 (style "opacity" 0.9))
                                             (.. div
-                                                (html (.-date d)))))
+                                                (html (ct/to-local-date (.-date d))))))
                                       (on "mouseout"
                                           (fn [d]
                                             (.. div
