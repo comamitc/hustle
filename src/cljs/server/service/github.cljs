@@ -1,12 +1,10 @@
 (ns server.service.github
-  (:refer-clojure :exclude [reduce into])
   (:require-macros [cljs.core.async.macros :refer [go go-loop]])
   (:require [cljs.nodejs :as nodejs]
             [cljs.core.async :as async :refer [<! put! chan onto-chan close!]]
             [cljs-time.core :as time]
             [cljs-time.coerce :as ctime]
-            [cljs-time.format :as ftime]
-            [common.util :refer [js-log log js->cljs cljs->js]]
+            [common.util :refer [js->cljs cljs->js]]
             [server.config :refer [config]]))
 
 ; GitHub API
