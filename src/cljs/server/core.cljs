@@ -22,7 +22,7 @@
 ;; github route
 (. app (get "/api/github"
             (fn [req res]
-              (take! (gh/get-activity) #(.send res (str %1))))))
+              (take! (gh/get-activity) #(.send res (str %))))))
 
 ;; bitbucket route
 (. app (get "/api/bitbucket" (fn [req res] (.send res "Hello, World!"))))
