@@ -7,7 +7,7 @@
             [cljs-time.core :as t]
             [cljs-time.coerce :as ct]
             [cljs-time.periodic :refer [periodic-seq]]
-            [common.util :refer [log js-log]]))
+            [common.util :refer [log js-log cljs->js]]))
 
 ;; todo - remove and add as parameters to the component
 (def width 900)
@@ -27,10 +27,10 @@
               (conj acc
                     (reduce (fn [acc week]
                               (let [x (* week edge)]
-                               (conj acc {:x x
-                                          :y y
-                                          :edge edge
-                                          :date (compute-date week day)})))
+                               (conj acc {"x"    x
+                                          "y"    y
+                                          "edge" edge
+                                          "date" (compute-date week day)})))
                             []
                             (range weeks)))))
            []
@@ -38,11 +38,11 @@
 
 (def data (cal-grid))
 
-
 (defn- graph [data]
   (reagent/create-class
     {:reagent-render      (fn [] [:div [:svg {:width width :height height}]])
      :component-did-mount (fn []
+                              ; @TODO: there is an issue with cljs->js and DateTime - use string instead
                               (let [d3data (clj->js data)
                                     row    (.. js/d3
                                                (select "svg")
